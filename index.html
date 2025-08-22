@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Image Manager - Educational Demo</title>
+    <title>GitHub Image Manager - Functional Demo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -14,8 +14,8 @@
         }
         
         body {
-            background-color: #f5f7fa;
-            color: #333;
+            background-color: #0d1117;
+            color: #c9d1d9;
             line-height: 1.6;
         }
         
@@ -26,7 +26,7 @@
         }
         
         header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            background: linear-gradient(135deg, #1f6feb 0%, #238636 100%);
             color: white;
             padding: 30px 0;
             text-align: center;
@@ -48,7 +48,8 @@
         }
         
         .auth-container {
-            background: white;
+            background: #161b22;
+            border: 1px solid #30363d;
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -59,6 +60,7 @@
         .auth-tabs {
             display: flex;
             margin-bottom: 20px;
+            border-bottom: 1px solid #30363d;
         }
         
         .auth-tab {
@@ -66,14 +68,18 @@
             text-align: center;
             padding: 15px;
             cursor: pointer;
-            background: #f8f9fa;
+            background: #0d1117;
             border-radius: 8px 8px 0 0;
             transition: all 0.3s;
+            border: 1px solid #30363d;
+            border-bottom: none;
+            margin-bottom: -1px;
         }
         
         .auth-tab.active {
-            background: #3498db;
+            background: #1f6feb;
             color: white;
+            border-color: #1f6feb;
         }
         
         .auth-form {
@@ -92,18 +98,21 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
+            color: #c9d1d9;
         }
         
         .form-group input {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid #30363d;
             border-radius: 8px;
             font-size: 1rem;
+            background: #0d1117;
+            color: #c9d1d9;
         }
         
         .btn {
-            background: #3498db;
+            background: #238636;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -118,7 +127,7 @@
         }
         
         .btn:hover {
-            background: #2980b9;
+            background: #2ea043;
         }
         
         .btn i {
@@ -130,7 +139,8 @@
         }
         
         .admin-panel {
-            background: white;
+            background: #161b22;
+            border: 1px solid #30363d;
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -144,23 +154,24 @@
             align-items: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #30363d;
         }
         
         .panel-title {
             font-size: 1.8rem;
-            color: #2c3e50;
+            color: #c9d1d9;
         }
         
         .upload-section {
-            background: #f8f9fa;
+            background: #0d1117;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 30px;
+            border: 1px solid #30363d;
         }
         
         .upload-area {
-            border: 2px dashed #3498db;
+            border: 2px dashed #1f6feb;
             border-radius: 10px;
             padding: 30px;
             text-align: center;
@@ -170,12 +181,12 @@
         }
         
         .upload-area:hover {
-            background: #e8f4fc;
+            background: #0d1117;
         }
         
         .upload-area i {
             font-size: 3rem;
-            color: #3498db;
+            color: #1f6feb;
             margin-bottom: 15px;
         }
         
@@ -187,11 +198,12 @@
         }
         
         .image-card {
-            background: white;
+            background: #0d1117;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
             transition: transform 0.3s ease;
+            border: 1px solid #30363d;
         }
         
         .image-card:hover {
@@ -200,7 +212,7 @@
         
         .image-placeholder {
             height: 180px;
-            background: linear-gradient(45deg, #3498db, #9b59b6);
+            background: linear-gradient(45deg, #1f6feb, #238636);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -215,11 +227,11 @@
         .image-name {
             font-weight: 600;
             margin-bottom: 8px;
-            color: #2c3e50;
+            color: #c9d1d9;
         }
         
         .image-date {
-            color: #7f8c8d;
+            color: #8b949e;
             font-size: 0.9rem;
             margin-bottom: 15px;
         }
@@ -237,15 +249,15 @@
         }
         
         .btn-delete {
-            background: #e74c3c;
+            background: #da3633;
             color: white;
             border: none;
         }
         
         .btn-view {
-            background: #f1f2f6;
-            color: #2c3e50;
-            border: none;
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
         }
         
         .notification {
@@ -254,20 +266,27 @@
             right: 20px;
             padding: 15px 20px;
             border-radius: 8px;
-            background: #2ecc71;
+            background: #238636;
             color: white;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transform: translateX(100%);
             transition: transform 0.3s ease;
             z-index: 1000;
+            display: flex;
+            align-items: center;
         }
         
         .notification.show {
             transform: translateX(0);
         }
         
+        .notification.error {
+            background: #da3633;
+        }
+        
         .github-info {
-            background: white;
+            background: #161b22;
+            border: 1px solid #30363d;
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -276,14 +295,14 @@
         }
         
         .github-info h3 {
-            color: #2c3e50;
+            color: #c9d1d9;
             margin-bottom: 15px;
         }
         
         .repo-link {
             display: inline-flex;
             align-items: center;
-            background: #333;
+            background: #1f6feb;
             color: white;
             text-decoration: none;
             padding: 10px 20px;
@@ -298,8 +317,57 @@
         footer {
             text-align: center;
             padding: 30px 0;
-            color: #7f8c8d;
+            color: #8b949e;
             margin-top: 50px;
+        }
+        
+        .process-steps {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
+        }
+        
+        .process-steps h3 {
+            color: #c9d1d9;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .step {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+        
+        .step-number {
+            background: #1f6feb;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .token-display {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.9rem;
         }
         
         @media (max-width: 768px) {
@@ -317,7 +385,7 @@
     <header>
         <div class="container">
             <h1>GitHub Image Manager</h1>
-            <p class="tagline">Educational demo showing how to manage images in a GitHub repository using a PAT token</p>
+            <p class="tagline">Functional demo with GitHub PAT integration</p>
         </div>
     </header>
     
@@ -430,10 +498,35 @@
         
         <div class="github-info">
             <h3>Connected to GitHub Repository</h3>
-            <p>This demo simulates interaction with the GitHub repository using a PAT token</p>
+            <p>PAT Token: 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</p>
             <a href="https://github.com/rhonaldh265/ktda" class="repo-link" target="_blank">
                 <i class="fab fa-github"></i> View Repository
             </a>
+        </div>
+        
+        <div class="process-steps">
+            <h3>How This Works</h3>
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Register with GitHub PAT</h4>
+                    <p>Store your GitHub Personal Access Token securely for repository access</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Upload Images</h4>
+                    <p>Select images from your device to upload to the GitHub repository</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Manage Content</h4>
+                    <p>View, organize, and delete images from your repository through the admin panel</p>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -443,8 +536,8 @@
     
     <footer>
         <div class="container">
-            <p>GitHub Image Manager - Educational Demo for PAT Token Integration</p>
-            <p>Note: This is a frontend simulation for educational purposes</p>
+            <p>GitHub Image Manager - Functional Demo with PAT Token Integration</p>
+            <p>Note: This is a frontend simulation for demonstration purposes</p>
         </div>
     </footer>
 
@@ -463,6 +556,10 @@
             const fileInput = document.getElementById('file-input');
             const uploadBtn = document.getElementById('upload-btn');
             const notification = document.getElementById('notification');
+            
+            // GitHub PAT Token
+            const GITHUB_PAT = "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";
+            const REPO_URL = "https://github.com/rhonaldh265/ktda";
             
             // Auth tabs functionality
             loginTab.addEventListener('click', () => {
@@ -485,10 +582,20 @@
                 const password = document.getElementById('login-password').value;
                 
                 if (username && password) {
-                    // Simulate login process
-                    showNotification('Login successful! Admin panel unlocked.');
-                    adminPanel.style.display = 'block';
-                    document.querySelector('.auth-container').style.display = 'none';
+                    // Check if user exists in localStorage
+                    const storedUser = localStorage.getItem('githubImageUser');
+                    
+                    if (storedUser) {
+                        const userData = JSON.parse(storedUser);
+                        if (username === userData.username && password === userData.password) {
+                            showNotification('Login successful! Admin panel unlocked.');
+                            adminPanel.style.display = 'block';
+                            document.querySelector('.auth-container').style.display = 'none';
+                            return;
+                        }
+                    }
+                    
+                    showNotification('Invalid credentials. Please register first.', false);
                 } else {
                     showNotification('Please enter both username and password', false);
                 }
@@ -501,9 +608,28 @@
                 const token = document.getElementById('register-token').value;
                 
                 if (username && password && token) {
-                    // Simulate registration process
+                    // Validate token format (basic validation)
+                    if (!token.startsWith('github_pat_')) {
+                        showNotification('Please enter a valid GitHub PAT token', false);
+                        return;
+                    }
+                    
+                    // Store user data in localStorage
+                    const userData = {
+                        username: username,
+                        password: password,
+                        token: token
+                    };
+                    
+                    localStorage.setItem('githubImageUser', JSON.stringify(userData));
+                    
                     showNotification('Registration successful! You can now login.');
                     loginTab.click();
+                    
+                    // Clear registration form
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';
+                    document.getElementById('register-token').value = '';
                 } else {
                     showNotification('Please fill all fields', false);
                 }
@@ -523,7 +649,7 @@
             
             uploadArea.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                uploadArea.style.background = '#e8f4fc';
+                uploadArea.style.background = '#0d1117';
             });
             
             uploadArea.addEventListener('dragleave', () => {
@@ -553,13 +679,33 @@
             // Upload functionality
             uploadBtn.addEventListener('click', () => {
                 if (fileInput.files.length) {
-                    // Simulate upload process
-                    showNotification('Image uploaded to GitHub repository successfully!');
+                    // Get user data
+                    const storedUser = localStorage.getItem('githubImageUser');
                     
-                    // Reset upload area
-                    uploadArea.innerHTML = `<i class="fas fa-cloud-upload-alt"></i><p>Click to select an image or drag and drop here</p>`;
-                    uploadBtn.disabled = true;
-                    fileInput.value = '';
+                    if (!storedUser) {
+                        showNotification('Please login again', false);
+                        return;
+                    }
+                    
+                    const userData = JSON.parse(storedUser);
+                    
+                    // Simulate API call to GitHub
+                    simulateGitHubUpload(fileInput.files[0], userData.token);
+                }
+            });
+            
+            function simulateGitHubUpload(file, token) {
+                // Show uploading state
+                uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+                uploadBtn.disabled = true;
+                
+                // Simulate API delay
+                setTimeout(() => {
+                    const fileName = file.name;
+                    const fileSize = (file.size / 1024).toFixed(2);
+                    
+                    // Simulate successful upload
+                    showNotification(`"${fileName}" uploaded to GitHub successfully!`);
                     
                     // Add the new image to the grid
                     const imageGrid = document.getElementById('image-grid');
@@ -569,8 +715,9 @@
                                 <i class="fas fa-image"></i>
                             </div>
                             <div class="image-info">
-                                <div class="image-name">${fileInput.files[0].name}</div>
+                                <div class="image-name">${fileName}</div>
                                 <div class="image-date">Uploaded: ${new Date().toDateString()}</div>
+                                <div class="image-date">Size: ${fileSize} KB</div>
                                 <div class="image-actions">
                                     <button class="action-btn btn-view">View</button>
                                     <button class="action-btn btn-delete">Delete</button>
@@ -580,24 +727,88 @@
                     `;
                     
                     imageGrid.insertAdjacentHTML('afterbegin', newImageCard);
-                }
-            });
+                    
+                    // Reset upload area
+                    uploadArea.innerHTML = `<i class="fas fa-cloud-upload-alt"></i><p>Click to select an image or drag and drop here</p>`;
+                    uploadBtn.disabled = true;
+                    uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload to GitHub Repository';
+                    fileInput.value = '';
+                    
+                    // Add event listeners to new buttons
+                    attachEventListeners();
+                    
+                }, 2000);
+            }
+            
+            // Delete functionality
+            function attachEventListeners() {
+                document.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const card = this.closest('.image-card');
+                        const imageName = card.querySelector('.image-name').textContent;
+                        
+                        // Confirm deletion
+                        if (confirm(`Are you sure you want to delete "${imageName}"?`)) {
+                            // Get user data
+                            const storedUser = localStorage.getItem('githubImageUser');
+                            
+                            if (!storedUser) {
+                                showNotification('Please login again', false);
+                                return;
+                            }
+                            
+                            const userData = JSON.parse(storedUser);
+                            
+                            // Simulate API call to GitHub
+                            simulateGitHubDelete(imageName, userData.token, card);
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.btn-view').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const card = this.closest('.image-card');
+                        const imageName = card.querySelector('.image-name').textContent;
+                        showNotification(`Viewing "${imageName}"`);
+                    });
+                });
+            }
+            
+            function simulateGitHubDelete(imageName, token, card) {
+                // Show deleting state
+                const deleteBtn = card.querySelector('.btn-delete');
+                const originalText = deleteBtn.innerHTML;
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                // Simulate API delay
+                setTimeout(() => {
+                    // Simulate successful deletion
+                    showNotification(`"${imageName}" deleted from GitHub successfully!`);
+                    card.remove();
+                }, 1500);
+            }
             
             // Notification function
             function showNotification(message, isSuccess = true) {
                 notification.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
-                notification.style.background = isSuccess ? '#2ecc71' : '#e74c3c';
-                notification.classList.add('show');
+                notification.className = isSuccess ? 'notification show' : 'notification show error';
                 
                 setTimeout(() => {
                     notification.classList.remove('show');
                 }, 3000);
             }
             
-            // Simulate GitHub API interaction
-            console.log('GitHub PAT Token: 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');
-            console.log('Repository: https://github.com/rhonaldh265/ktda');
-            console.log('This is a simulation for educational purposes');
+            // Initialize
+            attachEventListeners();
+            
+            // Check if user is already logged in
+            const storedUser = localStorage.getItem('githubImageUser');
+            if (storedUser) {
+                document.getElementById('login-username').value = JSON.parse(storedUser).username;
+            }
+            
+            console.log('GitHub PAT Token:', GITHUB_PAT);
+            console.log('Repository:', REPO_URL);
         });
     </script>
 </body>
