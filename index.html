@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Image Manager - Real Implementation</title>
+    <title>GitHub Image Manager - Fixed Authentication</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -192,6 +192,7 @@
             z-index: 1000;
             display: flex;
             align-items: center;
+            max-width: 400px;
         }
         
         .notification.show {
@@ -300,6 +301,39 @@
             animation: spin 1s ease-in-out infinite;
         }
         
+        .debug-info {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        
+        .debug-info h3 {
+            color: #c9d1d9;
+            margin-bottom: 15px;
+        }
+        
+        .debug-content {
+            color: #8b949e;
+        }
+        
+        .permission-check {
+            margin-top: 20px;
+            padding: 15px;
+            background: #0d1117;
+            border-radius: 8px;
+            border-left: 4px solid #da3633;
+        }
+        
+        .permission-check ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -323,7 +357,7 @@
     <header>
         <div class="container">
             <h1>GitHub Image Manager</h1>
-            <p class="tagline">Real implementation with GitHub API integration</p>
+            <p class="tagline">Fixed authentication with better error handling</p>
         </div>
     </header>
     
@@ -332,10 +366,20 @@
             <h3>GitHub PAT Authentication</h3>
             <p>Enter your GitHub Personal Access Token to manage images in your repository</p>
             <div class="token-input">
-                <input type="password" id="github-token" placeholder="Enter your GitHub PAT token" value="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">
+                <input type="password" id="github-token" placeholder="Enter your GitHub PAT token">
                 <button class="btn" id="save-token">
                     <i class="fas fa-key"></i> Authenticate
                 </button>
+            </div>
+            
+            <div class="permission-check">
+                <h4>Authentication Issues?</h4>
+                <p>If you're getting "bad credentials" errors, check that your PAT has:</p>
+                <ul>
+                    <li>Read and write permissions for repositories</li>
+                    <li>Access to the specific repository (rhonaldh265/ktda)</li>
+                    <li>Not expired or been revoked</li>
+                </ul>
             </div>
         </div>
         
@@ -366,11 +410,11 @@
             <div class="image-grid" id="image-grid">
                 <div class="image-card">
                     <div class="image-preview">
-                        <i class="fas fa-spinner loading"></i>
+                        <i class="fas fa-lock"></i>
                     </div>
                     <div class="image-info">
-                        <div class="image-name">Loading images...</div>
-                        <div class="image-date">Please authenticate first</div>
+                        <div class="image-name">Authentication Required</div>
+                        <div class="image-date">Please authenticate with a valid PAT token</div>
                         <div class="image-actions">
                             <button class="action-btn btn-view" disabled>View</button>
                             <button class="action-btn btn-delete" disabled>Delete</button>
@@ -381,11 +425,20 @@
         </div>
         
         <div class="github-info">
-            <h3>Connected to GitHub Repository</h3>
+            <h3>GitHub Repository Information</h3>
             <p>Repository: <strong>rhonaldh265/ktda</strong></p>
             <a href="https://github.com/rhonaldh265/ktda" class="repo-link" target="_blank">
                 <i class="fab fa-github"></i> View Repository
             </a>
+        </div>
+        
+        <div class="debug-info">
+            <h3>Debug Information</h3>
+            <div class="debug-content">
+                <p>Status: <span id="debug-status">Not authenticated</span></p>
+                <p>Last Action: <span id="debug-action">None</span></p>
+                <p>Response: <span id="debug-response">Waiting for action...</span></p>
+            </div>
         </div>
     </div>
     
@@ -395,7 +448,7 @@
     
     <footer>
         <div class="container">
-            <p>GitHub Image Manager - Real Implementation with GitHub API</p>
+            <p>GitHub Image Manager - Fixed authentication implementation</p>
             <p>Note: This is a frontend implementation that demonstrates GitHub API integration</p>
         </div>
     </footer>
@@ -413,10 +466,22 @@
             const notification = document.getElementById('notification');
             const imageGrid = document.getElementById('image-grid');
             
+            // Debug elements
+            const debugStatus = document.getElementById('debug-status');
+            const debugAction = document.getElementById('debug-action');
+            const debugResponse = document.getElementById('debug-response');
+            
             // GitHub configuration
             const repoOwner = 'rhonaldh265';
             const repoName = 'ktda';
             let githubToken = '';
+            
+            // Update debug info
+            function updateDebugInfo(action, response, status) {
+                debugAction.textContent = action;
+                debugResponse.textContent = response;
+                if (status) debugStatus.textContent = status;
+            }
             
             // Save token functionality
             saveTokenBtn.addEventListener('click', () => {
@@ -424,17 +489,90 @@
                 
                 if (!githubToken) {
                     showNotification('Please enter a GitHub PAT token', false);
+                    updateDebugInfo('Authentication', 'No token provided', 'Authentication failed');
                     return;
                 }
                 
-                if (!githubToken.startsWith('github_pat_')) {
+                if (!githubToken.startsWith('github_pat_') && !githubToken.startsWith('ghp_')) {
                     showNotification('Please enter a valid GitHub PAT token', false);
+                    updateDebugInfo('Authentication', 'Invalid token format', 'Authentication failed');
                     return;
                 }
                 
-                showNotification('GitHub token saved successfully!');
-                loadRepoImages();
+                // Test the token by making a simple API call
+                testGitHubToken();
             });
+            
+            // Test GitHub token
+            async function testGitHubToken() {
+                try {
+                    saveTokenBtn.innerHTML = '<span class="loading"></span> Testing...';
+                    saveTokenBtn.disabled = true;
+                    
+                    const apiUrl = `https://api.github.com/user`;
+                    const response = await fetch(apiUrl, {
+                        headers: {
+                            'Authorization': `token ${githubToken}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const userData = await response.json();
+                        showNotification(`Authenticated as ${userData.login}`);
+                        updateDebugInfo('Authentication', `Successfully authenticated as ${userData.login}`, 'Authenticated');
+                        
+                        // Check repository access
+                        checkRepositoryAccess();
+                    } else if (response.status === 401) {
+                        throw new Error('Invalid token: Bad credentials');
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                } catch (error) {
+                    console.error('Token test error:', error);
+                    showNotification(`Authentication failed: ${error.message}`, false);
+                    updateDebugInfo('Authentication', error.message, 'Authentication failed');
+                    saveTokenBtn.innerHTML = '<i class="fas fa-key"></i> Authenticate';
+                    saveTokenBtn.disabled = false;
+                }
+            }
+            
+            // Check repository access
+            async function checkRepositoryAccess() {
+                try {
+                    updateDebugInfo('Repository Access', 'Checking repository permissions...');
+                    
+                    const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}`;
+                    const response = await fetch(apiUrl, {
+                        headers: {
+                            'Authorization': `token ${githubToken}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const repoData = await response.json();
+                        updateDebugInfo('Repository Access', `Access confirmed: ${repoData.full_name}`, 'Full access');
+                        saveTokenBtn.innerHTML = '<i class="fas fa-check"></i> Authenticated';
+                        
+                        // Load repository images
+                        loadRepoImages();
+                    } else if (response.status === 404) {
+                        throw new Error('Repository not found or no access');
+                    } else if (response.status === 403) {
+                        throw new Error('Access forbidden: Check repository permissions');
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                } catch (error) {
+                    console.error('Repository access error:', error);
+                    showNotification(`Repository access failed: ${error.message}`, false);
+                    updateDebugInfo('Repository Access', error.message, 'Limited access');
+                    saveTokenBtn.innerHTML = '<i class="fas fa-key"></i> Authenticate';
+                    saveTokenBtn.disabled = false;
+                }
+            }
             
             // Refresh functionality
             refreshBtn.addEventListener('click', () => {
@@ -506,6 +644,7 @@
                     // Show uploading state
                     uploadBtn.innerHTML = '<span class="loading"></span> Uploading...';
                     uploadBtn.disabled = true;
+                    updateDebugInfo('Upload', 'Starting upload process...');
                     
                     // Read file as base64
                     const file = fileInput.files[0];
@@ -514,6 +653,8 @@
                     // Prepare API request
                     const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
                     const commitMessage = `Add ${file.name} via GitHub Image Manager`;
+                    
+                    updateDebugInfo('Upload', 'Sending request to GitHub API...');
                     
                     const response = await fetch(apiUrl, {
                         method: 'PUT',
@@ -529,9 +670,11 @@
                         })
                     });
                     
+                    const responseData = await response.json();
+                    
                     if (response.ok) {
-                        const data = await response.json();
                         showNotification('Image uploaded to GitHub successfully!');
+                        updateDebugInfo('Upload', 'Success: File uploaded to repository');
                         
                         // Reset upload area
                         uploadArea.innerHTML = `<i class="fas fa-cloud-upload-alt"></i><p>Click to select an image or drag and drop here</p>`;
@@ -543,12 +686,21 @@
                         // Refresh image list
                         loadRepoImages();
                     } else {
-                        const error = await response.json();
-                        throw new Error(error.message || 'Failed to upload image');
+                        let errorMsg = responseData.message || 'Unknown error';
+                        if (response.status === 401) {
+                            errorMsg = 'Bad credentials: Check your PAT token permissions';
+                        } else if (response.status === 403) {
+                            errorMsg = 'Forbidden: You may not have write access to this repository';
+                        } else if (response.status === 404) {
+                            errorMsg = 'Repository not found: Check repository name and permissions';
+                        }
+                        
+                        throw new Error(errorMsg);
                     }
                 } catch (error) {
                     console.error('Upload error:', error);
                     showNotification(`Upload failed: ${error.message}`, false);
+                    updateDebugInfo('Upload', `Error: ${error.message}`);
                     uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload to GitHub';
                     uploadBtn.disabled = false;
                 }
@@ -559,6 +711,8 @@
                 if (!githubToken) return;
                 
                 try {
+                    updateDebugInfo('Load Images', 'Fetching repository contents...');
+                    
                     imageGrid.innerHTML = `
                         <div class="image-card">
                             <div class="image-preview">
@@ -589,6 +743,8 @@
                             item.type === 'file' && 
                             item.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)
                         );
+                        
+                        updateDebugInfo('Load Images', `Found ${imageFiles.length} images`);
                         
                         if (imageFiles.length === 0) {
                             imageGrid.innerHTML = `
@@ -636,7 +792,13 @@
                             imageGrid.appendChild(imageCard);
                         }
                     } else {
-                        throw new Error('Failed to load repository contents');
+                        let errorMsg = 'Failed to load repository contents';
+                        if (response.status === 404) {
+                            errorMsg = 'Repository not found: Check repository name and permissions';
+                        } else if (response.status === 403) {
+                            errorMsg = 'Access forbidden: Check your PAT token permissions';
+                        }
+                        throw new Error(errorMsg);
                     }
                 } catch (error) {
                     console.error('Load error:', error);
@@ -655,6 +817,7 @@
                             </div>
                         </div>
                     `;
+                    updateDebugInfo('Load Images', `Error: ${error.message}`);
                 }
             }
             
@@ -698,6 +861,8 @@
                 }
                 
                 try {
+                    updateDebugInfo('Delete', `Attempting to delete: ${path}`);
+                    
                     const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
                     const commitMessage = `Delete ${path} via GitHub Image Manager`;
                     
@@ -715,25 +880,28 @@
                         })
                     });
                     
+                    const responseData = await response.json();
+                    
                     if (response.ok) {
                         showNotification('Image deleted from GitHub successfully!');
+                        updateDebugInfo('Delete', 'Success: File deleted from repository');
                         loadRepoImages();
                     } else {
-                        const error = await response.json();
-                        throw new Error(error.message || 'Failed to delete image');
+                        let errorMsg = responseData.message || 'Failed to delete image';
+                        if (response.status === 403) {
+                            errorMsg = 'Delete forbidden: Check your PAT token permissions';
+                        }
+                        throw new Error(errorMsg);
                     }
                 } catch (error) {
                     console.error('Delete error:', error);
                     showNotification(`Delete failed: ${error.message}`, false);
+                    updateDebugInfo('Delete', `Error: ${error.message}`);
                 }
             };
             
-            // Initialize with provided token if available
-            const providedToken = "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";
-            if (providedToken) {
-                githubTokenInput.value = providedToken;
-                saveTokenBtn.click();
-            }
+            // Initialize with better error handling
+            updateDebugInfo('Initialization', 'App loaded successfully. Ready for authentication.');
         });
     </script>
 </body>
